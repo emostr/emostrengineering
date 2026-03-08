@@ -25,7 +25,6 @@
 
     <main>
 
-        <!-- Hero -->
         <section class="hero hero--inner">
             <div class="container">
                 <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
@@ -34,32 +33,26 @@
             </div>
         </section>
 
-        <!-- Calculator -->
         <section class="section section-divider">
             <div class="container">
                 <div class="calc-wrap">
 
-                    <!-- Network tabs -->
                     <div class="net-tabs">
                         <button class="net-tab net-tab--active" data-net="single">Однофазная 230В</button>
                         <button class="net-tab" data-net="three">Трёхфазная 400В</button>
                     </div>
                     <div class="net-formula" id="netFormula">I = P / U</div>
 
-                    <!-- Mode buttons -->
                     <div class="calc-modes">
                         <button class="mode-btn mode-btn--active" data-mode="findI">Найти I</button>
                         <button class="mode-btn" data-mode="findP">Найти P</button>
                         <button class="mode-btn" data-mode="findU">Найти U</button>
                     </div>
 
-                    <!-- Fields (rendered by JS) -->
                     <div class="calc-fields" id="calcFields"></div>
 
-                    <!-- Calculate -->
                     <button class="calc-submit" id="calcSubmit">Рассчитать</button>
 
-                    <!-- Result -->
                     <div class="calc-result" id="calcResult" style="display:none">
                         <div class="result-value" id="resultValue"></div>
                         <div class="result-formula" id="resultFormula"></div>
@@ -183,7 +176,6 @@
                 }).join('');
                 document.getElementById('calcFields').innerHTML = html;
 
-                // Pre-fill voltage field if present
                 var fields = cfg.fields;
                 for (var i = 0; i < fields.length; i++) {
                     if (fields[i].label.indexOf('Напряжение') !== -1) {
@@ -269,7 +261,6 @@
                 reset();
             }
 
-            // Init
             reset();
 
             document.querySelectorAll('.net-tab').forEach(function (tab) {
