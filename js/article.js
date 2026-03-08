@@ -22,7 +22,6 @@
             });
     }
 
-    /* ---- Frontmatter ---- */
     function parseFrontmatter(text) {
         var meta = {};
         var body = text;
@@ -47,7 +46,7 @@
         return { meta: meta, body: body };
     }
 
-    /* ---- Hero ---- */
+
     function renderHero(meta) {
         var el = document.getElementById('article-hero');
         if (!el) return;
@@ -74,7 +73,6 @@
         }
     }
 
-    /* ---- Content ---- */
     function renderContent(body) {
         var el = document.getElementById('article-content');
         if (!el) return;
@@ -86,7 +84,6 @@
         generateTOC(el);
     }
 
-    /* ---- Tables ---- */
     function postProcessTables(contentEl) {
         contentEl.querySelectorAll('table').forEach(function (table) {
             var wrap = document.createElement('div');
@@ -96,7 +93,6 @@
         });
     }
 
-    /* ---- Blockquotes ---- */
     var BQ_TYPES = [
         { prefix: '⚠️', cls: 'blockquote-warning', title: '⚠️ Важно' },
         { prefix: '✅', cls: 'blockquote-tip',     title: '✅ Совет' },
@@ -122,7 +118,6 @@
         });
     }
 
-    /* ---- TOC ---- */
     function generateTOC(contentEl) {
         var headings = contentEl.querySelectorAll('h2');
         var tocEl = document.getElementById('article-toc');
@@ -157,7 +152,6 @@
         }
     }
 
-    /* ---- Sidebar calc ---- */
     function renderSidebarCalc(meta) {
         var el = document.getElementById('sidebar-calc');
         if (!el) return;
@@ -174,7 +168,6 @@
             '<a href="' + esc(meta.calc_url) + '" class="sidebar-calc-btn">Открыть калькулятор</a>';
     }
 
-    /* ---- Calc banner ---- */
     function renderCalcBanner(meta) {
         var el = document.getElementById('article-calc-banner');
         if (!el || !meta.calc_url) return;
@@ -189,7 +182,6 @@
             '</div>';
     }
 
-    /* ---- Helpers ---- */
     function esc(str) {
         return String(str)
             .replace(/&/g, '&amp;')
