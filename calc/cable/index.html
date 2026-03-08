@@ -25,7 +25,6 @@
 
     <main>
 
-        <!-- Hero -->
         <section class="hero hero--inner">
             <div class="container">
                 <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
@@ -34,18 +33,15 @@
             </div>
         </section>
 
-        <!-- Calculator -->
         <section class="section section-divider">
             <div class="container">
                 <div class="calc-wrap" style="max-width: 560px">
 
-                    <!-- Presets -->
                     <div class="block-title">Быстрый выбор нагрузки</div>
                     <div class="preset-grid" id="presetGrid"></div>
 
                     <hr class="section-hr section-hr--sm">
 
-                    <!-- Inputs -->
                     <div class="block-title" style="margin-bottom: 16px">Параметры линии</div>
                     <div class="calc-fields">
 
@@ -82,10 +78,8 @@
 
                     <button class="calc-submit" id="calcSubmit">Рассчитать</button>
 
-                    <!-- Warning (>70A) -->
                     <div class="calc-warning" id="calcWarning" style="display:none"></div>
 
-                    <!-- Results -->
                     <div class="results-grid" id="resultsGrid" style="display:none">
                         <div class="result-card" id="cardSection">
                             <div class="result-card-title">Сечение кабеля</div>
@@ -104,7 +98,6 @@
                         </div>
                     </div>
 
-                    <!-- Formulas -->
                     <div class="formulas-block" id="formulasBlock" style="display:none">
                         <div class="formulas-title">Как получен результат</div>
                         <div class="formula-line" id="fmCurrent"></div>
@@ -156,7 +149,6 @@
 
             var activePresetIdx = null;
 
-            /* ---- Presets ---- */
             function renderPresets() {
                 var html = presets.map(function (p, idx) {
                     return '<button class="preset-btn" data-idx="' + idx + '">'
@@ -197,7 +189,6 @@
                 document.getElementById('presetReset').style.display = 'none';
             }
 
-            /* ---- Validation ---- */
             function validateNum(inputEl, errorEl, mustPositive) {
                 var raw = inputEl.value.trim();
                 if (raw === '' || isNaN(Number(raw))) {
@@ -216,7 +207,6 @@
                 return val;
             }
 
-            /* ---- Calculate ---- */
             function calculate() {
                 var pInput = document.getElementById('inpPower');
                 var lInput = document.getElementById('inpLength');
@@ -229,11 +219,9 @@
 
                 var vdropLimit = parseInt(document.getElementById('inpVdrop').value);
 
-                /* Step 1: current */
                 var I = P / VOLTAGE;
                 var IStr = parseFloat(I.toPrecision(4)).toString();
 
-                /* Step 2: table section */
                 var tableIdx = -1;
                 for (var i = 0; i < sections.length; i++) {
                     if (I <= sections[i].maxI) { tableIdx = i; break; }
@@ -250,7 +238,6 @@
                 document.getElementById('calcWarning').style.display = 'none';
 
                 var tableSection = sections[tableIdx];
-                /* Safety margin: if utilisation > 85% → step up */
                 var recIdx = tableIdx;
                 if (I / tableSection.maxI > 0.95 && tableIdx + 1 < sections.length) {
                     recIdx = tableIdx + 1;
@@ -258,26 +245,23 @@
                 var recSection = sections[recIdx];
                 var S = recSection.section;
 
-                /* Step 3: breaker */
                 var breaker = breakers[breakers.length - 1];
                 for (var j = 0; j < breakers.length; j++) {
                     if (breakers[j] >= I) { breaker = breakers[j]; break; }
                 }
-                /* Breaker must not exceed cable rating */
+
                 if (breaker > recSection.maxI) {
                     for (var k = breakers.length - 1; k >= 0; k--) {
                         if (breakers[k] <= recSection.maxI) { breaker = breakers[k]; break; }
                     }
                 }
 
-                /* Step 4: voltage drop */
                 var dU_V = (2 * RHO * L * I) / S;
                 var dU_pct = (dU_V / VOLTAGE) * 100;
                 var dU_pct_str = parseFloat(dU_pct.toPrecision(3)).toString();
                 var dU_V_str = parseFloat(dU_V.toPrecision(3)).toString();
                 var isOk = dU_pct <= vdropLimit;
 
-                /* --- Display cards --- */
                 document.getElementById('valSection').textContent = S + ' мм\u00B2';
                 document.getElementById('valBreaker').textContent = breaker + ' А';
 
@@ -296,7 +280,6 @@
                     descVdrop.style.color = '#cc3333';
                 }
 
-                /* --- Formula lines --- */
                 var fmCurrentText = 'Ток: I = P / U = ' + P + ' / 220 = ' + IStr + ' А';
                 var fmSectionText;
                 if (recIdx !== tableIdx) {
@@ -317,7 +300,6 @@
                 document.getElementById('formulasBlock').style.display = 'block';
             }
 
-            /* ---- Init ---- */
             renderPresets();
 
             document.getElementById('presetReset').addEventListener('click', resetPreset);
