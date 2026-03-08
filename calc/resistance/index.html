@@ -25,7 +25,6 @@
 
     <main>
 
-        <!-- Hero -->
         <section class="hero hero--inner">
             <div class="container">
                 <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
@@ -34,12 +33,10 @@
             </div>
         </section>
 
-        <!-- Calculator -->
         <section class="section section-divider">
             <div class="container">
                 <div class="calc-wrap">
 
-                    <!-- Triangle -->
                     <div class="ohm-triangle-outer">
                         <div class="ohm-triangle">
                             <button class="tri-zone tri-u" data-mode="findU">U</button>
@@ -51,20 +48,16 @@
                         <p class="tri-hint">Нажмите на величину которую хотите найти</p>
                     </div>
 
-                    <!-- Mode buttons -->
                     <div class="calc-modes">
                         <button class="mode-btn mode-btn--active" data-mode="findU">Напряжение</button>
                         <button class="mode-btn" data-mode="findI">Ток</button>
                         <button class="mode-btn" data-mode="findR">Сопротивление</button>
                     </div>
 
-                    <!-- Fields (rendered by JS) -->
                     <div class="calc-fields" id="calcFields"></div>
 
-                    <!-- Calculate -->
                     <button class="calc-submit" id="calcSubmit">Рассчитать</button>
 
-                    <!-- Result -->
                     <div class="calc-result" id="calcResult" style="display:none">
                         <div class="result-value" id="resultValue"></div>
                         <div class="result-formula" id="resultFormula"></div>
@@ -187,7 +180,6 @@
                 document.getElementById('calcResult').style.display = 'block';
             }
 
-            // Init
             renderFields(currentMode);
             document.querySelector('[data-mode="' + currentMode + '"].tri-zone').classList.add('tri-zone--active');
 
