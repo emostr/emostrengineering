@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор сечения кабеля - emostrEngineering</title>
+    <meta name="description" content="Выбор сечения кабеля, номинала автомата защиты и калькулятор падения напряжения">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                <img src="../../assets/pics/logo.png" height="60" alt="emostrEngineering">
+            </a>
+            <nav>
+                <a href="/calc/" class="nav-link">Калькуляторы</a>
+                <a href="/articles/" class="nav-link">Статьи</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="hero hero--inner">
+            <div class="container">
+                <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
+                <h1>Выбор сечения кабеля</h1>
+                <p>Выбор сечения, номинала автомата защиты</p>
+            </div>
+        </section>
+
+        <!-- Calculator -->
+        <section class="section section-divider">
+            <div class="container">
+                <div class="calc-wrap" style="max-width: 560px">
+
+                    <!-- Presets -->
+                    <div class="block-title">Быстрый выбор нагрузки</div>
+                    <div class="preset-grid" id="presetGrid"></div>
+
+                    <hr class="section-hr section-hr--sm">
+
+                    <!-- Inputs -->
+                    <div class="block-title" style="margin-bottom: 16px">Параметры линии</div>
+                    <div class="calc-fields">
+
+                        <div class="field-group">
+                            <label class="field-label" for="inpPower">Мощность нагрузки (P), Вт</label>
+                            <div class="field-row">
+                                <input class="field-input" type="number" id="inpPower"
+                                    placeholder="введите числовое значение" step="any">
+                                <button class="field-reset-btn" id="presetReset" style="display:none"
+                                    title="Сброс">&times;</button>
+                            </div>
+                            <div class="field-hint">Суммарная мощность всех электроприборов на линии</div>
+                            <div class="field-error" id="inpPower-err"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="inpLength">Длина линии (L), м</label>
+                            <input class="field-input" type="number" id="inpLength"
+                                placeholder="введите числовое значение" step="any">
+                            <div class="field-hint">От электрощита до конечной точки</div>
+                            <div class="field-error" id="inpLength-err"></div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="inpVdrop">Допустимое падение напряжения</label>
+                            <select class="field-input field-select" id="inpVdrop">
+                                <option value="3">3% (рекомендуется)</option>
+                                <option value="5">5% (в пределах нормы)</option>
+                                <option value="10">10% (плохо)</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button class="calc-submit" id="calcSubmit">Рассчитать</button>
+
+                    <!-- Warning (>70A) -->
+                    <div class="calc-warning" id="calcWarning" style="display:none"></div>
+
+                    <!-- Results -->
+                    <div class="results-grid" id="resultsGrid" style="display:none">
+                        <div class="result-card" id="cardSection">
+                            <div class="result-card-title">Сечение кабеля</div>
+                            <div class="result-card-value" id="valSection">—</div>
+                            <div class="result-card-desc">Рекомендуемое стандартное сечение</div>
+                        </div>
+                        <div class="result-card" id="cardBreaker">
+                            <div class="result-card-title">Номинал автомата</div>
+                            <div class="result-card-value" id="valBreaker">—</div>
+                            <div class="result-card-desc">Рекомендуемый автоматический выключатель</div>
+                        </div>
+                        <div class="result-card" id="cardVdrop">
+                            <div class="result-card-title">Падение напряжения</div>
+                            <div class="result-card-value" id="valVdrop">—</div>
+                            <div class="result-card-desc" id="descVdrop">—</div>
+                        </div>
+                    </div>
+
+                    <!-- Formulas -->
+                    <div class="formulas-block" id="formulasBlock" style="display:none">
+                        <div class="formulas-title">Как получен результат</div>
+                        <div class="formula-line" id="fmCurrent"></div>
+                        <div class="formula-line" id="fmSection"></div>
+                        <div class="formula-line" id="fmVdrop"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <span class="footer-copy">&copy; 2025&ndash;2026 emostrEngineering</span>
+            <a href="mailto:contact@emostr.com" class="footer-link">contact@emostr.com</a>
+            <a href="https://emostr.com" class="footer-link" target="_blank" rel="noopener">emostr.com</a>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var RHO = 0.0175;
+            var VOLTAGE = 220;
+
+            var sections = [
+                { maxI: 15, section: 1.5 },
+                { maxI: 21, section: 2.5 },
+                { maxI: 27, section: 4.0 },
+                { maxI: 34, section: 6.0 },
+                { maxI: 50, section: 10.0 },
+                { maxI: 70, section: 16.0 }
+            ];
+
+            var breakers = [6, 10, 16, 20, 25, 32, 40, 50, 63];
+
+            var presets = [
+                { icon: '\uD83E\uDEE7', name: 'Стиральная машина', power: '~2200 Вт', value: 2200 },
+                { icon: '\uD83E\uDEE7', name: 'Посудомоечная машина', power: '~2200 Вт', value: 2200 },
+                { icon: '\uD83D\uDEBF', name: 'Накопительный ЭВН', power: '~2000 Вт', value: 2000 },
+                { icon: '\uD83D\uDEBF', name: 'Проточный ЭВН 5–6 кВт', power: '~5500 Вт', value: 5500 },
+                { icon: '\uD83D\uDEBF', name: 'Проточный ЭВН 7–9 кВт', power: '~8000 Вт', value: 8000 },
+                { icon: '\uD83C\uDF73', name: 'Духовой шкаф', power: '~2000–3500 Вт', value: 3000 },
+                { icon: '\uD83C\uDF73', name: 'Варочная панель (4 конфорки)', power: '~7000 Вт', value: 7000 },
+                { icon: '\uD83D\uDD0C', name: 'Розетки комнатные', power: '<2000 Вт', value: 1500 },
+                { icon: '\uD83D\uDCA1', name: 'Освещение', power: '100–1500 Вт', value: 1000 }
+            ];
+
+            var activePresetIdx = null;
+
+            /* ---- Presets ---- */
+            function renderPresets() {
+                var html = presets.map(function (p, idx) {
+                    return '<button class="preset-btn" data-idx="' + idx + '">'
+                        + '<div class="preset-row1">' + p.icon + ' ' + p.name + '</div>'
+                        + '<div class="preset-row2">' + p.power + '</div>'
+                        + '</button>';
+                }).join('');
+                document.getElementById('presetGrid').innerHTML = html;
+
+                document.querySelectorAll('.preset-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        selectPreset(parseInt(btn.dataset.idx));
+                    });
+                });
+            }
+
+            function selectPreset(idx) {
+                activePresetIdx = idx;
+                document.querySelectorAll('.preset-btn').forEach(function (btn) {
+                    btn.classList.toggle('preset-btn--active', parseInt(btn.dataset.idx) === idx);
+                });
+                var powerInput = document.getElementById('inpPower');
+                powerInput.value = presets[idx].value;
+                powerInput.readOnly = true;
+                powerInput.style.borderColor = '#333';
+                document.getElementById('inpPower-err').textContent = '';
+                document.getElementById('presetReset').style.display = 'flex';
+            }
+
+            function resetPreset() {
+                activePresetIdx = null;
+                document.querySelectorAll('.preset-btn').forEach(function (btn) {
+                    btn.classList.remove('preset-btn--active');
+                });
+                var powerInput = document.getElementById('inpPower');
+                powerInput.value = '';
+                powerInput.readOnly = false;
+                document.getElementById('presetReset').style.display = 'none';
+            }
+
+            /* ---- Validation ---- */
+            function validateNum(inputEl, errorEl, mustPositive) {
+                var raw = inputEl.value.trim();
+                if (raw === '' || isNaN(Number(raw))) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Введите числовое значение';
+                    return null;
+                }
+                var val = Number(raw);
+                if (mustPositive && val <= 0) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = mustPositive;
+                    return null;
+                }
+                inputEl.style.borderColor = '#333';
+                errorEl.textContent = '';
+                return val;
+            }
+
+            /* ---- Calculate ---- */
+            function calculate() {
+                var pInput = document.getElementById('inpPower');
+                var lInput = document.getElementById('inpLength');
+                var pErr = document.getElementById('inpPower-err');
+                var lErr = document.getElementById('inpLength-err');
+
+                var P = validateNum(pInput, pErr, 'Мощность должна быть больше 0');
+                var L = validateNum(lInput, lErr, 'Длина линии должна быть больше 0');
+                if (P === null || L === null) return;
+
+                var vdropLimit = parseInt(document.getElementById('inpVdrop').value);
+
+                /* Step 1: current */
+                var I = P / VOLTAGE;
+                var IStr = parseFloat(I.toPrecision(4)).toString();
+
+                /* Step 2: table section */
+                var tableIdx = -1;
+                for (var i = 0; i < sections.length; i++) {
+                    if (I <= sections[i].maxI) { tableIdx = i; break; }
+                }
+
+                if (tableIdx === -1) {
+                    document.getElementById('calcWarning').textContent =
+                        'Слишком высокое значение.';
+                    document.getElementById('calcWarning').style.display = 'block';
+                    document.getElementById('resultsGrid').style.display = 'none';
+                    document.getElementById('formulasBlock').style.display = 'none';
+                    return;
+                }
+                document.getElementById('calcWarning').style.display = 'none';
+
+                var tableSection = sections[tableIdx];
+                /* Safety margin: if utilisation > 85% → step up */
+                var recIdx = tableIdx;
+                if (I / tableSection.maxI > 0.95 && tableIdx + 1 < sections.length) {
+                    recIdx = tableIdx + 1;
+                }
+                var recSection = sections[recIdx];
+                var S = recSection.section;
+
+                /* Step 3: breaker */
+                var breaker = breakers[breakers.length - 1];
+                for (var j = 0; j < breakers.length; j++) {
+                    if (breakers[j] >= I) { breaker = breakers[j]; break; }
+                }
+                /* Breaker must not exceed cable rating */
+                if (breaker > recSection.maxI) {
+                    for (var k = breakers.length - 1; k >= 0; k--) {
+                        if (breakers[k] <= recSection.maxI) { breaker = breakers[k]; break; }
+                    }
+                }
+
+                /* Step 4: voltage drop */
+                var dU_V = (2 * RHO * L * I) / S;
+                var dU_pct = (dU_V / VOLTAGE) * 100;
+                var dU_pct_str = parseFloat(dU_pct.toPrecision(3)).toString();
+                var dU_V_str = parseFloat(dU_V.toPrecision(3)).toString();
+                var isOk = dU_pct <= vdropLimit;
+
+                /* --- Display cards --- */
+                document.getElementById('valSection').textContent = S + ' мм\u00B2';
+                document.getElementById('valBreaker').textContent = breaker + ' А';
+
+                var vdropColor = isOk ? '#39a845' : '#cc3333';
+                var cardVdrop = document.getElementById('cardVdrop');
+                cardVdrop.style.borderTopColor = vdropColor;
+                var valVdrop = document.getElementById('valVdrop');
+                valVdrop.textContent = dU_pct_str + '%';
+                valVdrop.style.color = vdropColor;
+                var descVdrop = document.getElementById('descVdrop');
+                if (isOk) {
+                    descVdrop.textContent = 'В пределах нормы';
+                    descVdrop.style.color = '';
+                } else {
+                    descVdrop.textContent = 'Высокая потеря напряжения! Увеличьте сечение или сократите длину линии!';
+                    descVdrop.style.color = '#cc3333';
+                }
+
+                /* --- Formula lines --- */
+                var fmCurrentText = 'Ток: I = P / U = ' + P + ' / 220 = ' + IStr + ' А';
+                var fmSectionText;
+                if (recIdx !== tableIdx) {
+                    fmSectionText = 'Сечение: при токе ' + IStr + ' А \u2192 '
+                        + tableSection.section + ' мм\u00B2';
+                } else {
+                    fmSectionText = 'Сечение: при токе ' + IStr + ' А \u2192 ' + S + ' мм\u00B2';
+                }
+                var fmVdropText = '\u0394U = (2 \u00D7 \u03C1 \u00D7 L \u00D7 I) / S'
+                    + ' = (2 \u00D7 0.0175 \u00D7 ' + L + ' \u00D7 ' + IStr + ') / ' + S
+                    + ' = ' + dU_V_str + ' В = ' + dU_pct_str + '%';
+
+                document.getElementById('fmCurrent').textContent = fmCurrentText;
+                document.getElementById('fmSection').textContent = fmSectionText;
+                document.getElementById('fmVdrop').textContent = fmVdropText;
+
+                document.getElementById('resultsGrid').style.display = 'flex';
+                document.getElementById('formulasBlock').style.display = 'block';
+            }
+
+            /* ---- Init ---- */
+            renderPresets();
+
+            document.getElementById('presetReset').addEventListener('click', resetPreset);
+            document.getElementById('calcSubmit').addEventListener('click', calculate);
+            document.getElementById('calcFields').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') calculate();
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

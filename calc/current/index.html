@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ток по мощности — emostrEngineering</title>
+    <meta name="description" content="Калькулятор тока по мощности: однофазная и трёхфазная сеть">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                <img src="../../assets/pics/logo.png" height="60" alt="emostrEngineering">
+            </a>
+            <nav>
+                <a href="/calc/" class="nav-link">Калькуляторы</a>
+                <a href="/articles/" class="nav-link">Статьи</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="hero hero--inner">
+            <div class="container">
+                <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
+                <h1>Калькулятор мощности</h1>
+                <p>I = P / U - найти любую величину по двум известным</p>
+            </div>
+        </section>
+
+        <!-- Calculator -->
+        <section class="section section-divider">
+            <div class="container">
+                <div class="calc-wrap">
+
+                    <!-- Network tabs -->
+                    <div class="net-tabs">
+                        <button class="net-tab net-tab--active" data-net="single">Однофазная 230В</button>
+                        <button class="net-tab" data-net="three">Трёхфазная 400В</button>
+                    </div>
+                    <div class="net-formula" id="netFormula">I = P / U</div>
+
+                    <!-- Mode buttons -->
+                    <div class="calc-modes">
+                        <button class="mode-btn mode-btn--active" data-mode="findI">Найти I</button>
+                        <button class="mode-btn" data-mode="findP">Найти P</button>
+                        <button class="mode-btn" data-mode="findU">Найти U</button>
+                    </div>
+
+                    <!-- Fields (rendered by JS) -->
+                    <div class="calc-fields" id="calcFields"></div>
+
+                    <!-- Calculate -->
+                    <button class="calc-submit" id="calcSubmit">Рассчитать</button>
+
+                    <!-- Result -->
+                    <div class="calc-result" id="calcResult" style="display:none">
+                        <div class="result-value" id="resultValue"></div>
+                        <div class="result-formula" id="resultFormula"></div>
+                        <div class="result-desc" id="resultDesc"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <span class="footer-copy">&copy; 2025&ndash;2026 emostrEngineering</span>
+            <a href="mailto:contact@emostr.com" class="footer-link">contact@emostr.com</a>
+            <a href="https://emostr.com" class="footer-link" target="_blank" rel="noopener">emostr.com</a>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var SQRT3 = Math.sqrt(3);
+
+            var COS_FIELD = {
+                id: 'inp3',
+                label: 'Коэффициент мощности (cos \u03C6)',
+                unit: '',
+                placeholder: '0.9',
+                validate: 'cosf',
+                hint: 'Обычно 0.85\u20130.95 для электродвигателей'
+            };
+
+            var configs = {
+                single: {
+                    findI: {
+                        fields: [
+                            { id: 'inp1', label: 'Мощность (P)', unit: 'Вт', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Напряжение (U)', unit: 'В', placeholder: '230', validate: 'nonzero' }
+                        ],
+                        calc: function (v) { return v[0] / v[1]; },
+                        fmt: function (v, r) { return 'I = ' + v[0] + ' Вт / ' + v[1] + ' В = ' + r + ' А'; },
+                        desc: function (r) { return 'Ток в цепи составляет ' + r + ' А'; },
+                        unit: 'А'
+                    },
+                    findP: {
+                        fields: [
+                            { id: 'inp1', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Напряжение (U)', unit: 'В', placeholder: '230', validate: 'any' }
+                        ],
+                        calc: function (v) { return v[0] * v[1]; },
+                        fmt: function (v, r) { return 'P = ' + v[0] + ' А \u00d7 ' + v[1] + ' В = ' + r + ' Вт'; },
+                        desc: function (r) { return 'Мощность нагрузки составляет ' + r + ' Вт'; },
+                        unit: 'Вт'
+                    },
+                    findU: {
+                        fields: [
+                            { id: 'inp1', label: 'Мощность (P)', unit: 'Вт', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение', validate: 'nonzero' }
+                        ],
+                        calc: function (v) { return v[0] / v[1]; },
+                        fmt: function (v, r) { return 'U = ' + v[0] + ' Вт / ' + v[1] + ' А = ' + r + ' В'; },
+                        desc: function (r) { return 'Напряжение в цепи составляет ' + r + ' В'; },
+                        unit: 'В'
+                    }
+                },
+                three: {
+                    findI: {
+                        fields: [
+                            { id: 'inp1', label: 'Мощность (P)', unit: 'Вт', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Напряжение (U)', unit: 'В', placeholder: '400', validate: 'nonzero' },
+                            COS_FIELD
+                        ],
+                        calc: function (v) { return v[0] / (v[1] * SQRT3 * v[2]); },
+                        fmt: function (v, r) { return 'I = ' + v[0] + ' Вт / (' + v[1] + ' В \u00d7 1.732 \u00d7 ' + v[2] + ') = ' + r + ' А'; },
+                        desc: function (r) { return 'Ток в цепи составляет ' + r + ' А'; },
+                        unit: 'А'
+                    },
+                    findP: {
+                        fields: [
+                            { id: 'inp1', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Напряжение (U)', unit: 'В', placeholder: '400', validate: 'any' },
+                            COS_FIELD
+                        ],
+                        calc: function (v) { return v[0] * v[1] * SQRT3 * v[2]; },
+                        fmt: function (v, r) { return 'P = ' + v[0] + ' А \u00d7 ' + v[1] + ' В \u00d7 1.732 \u00d7 ' + v[2] + ' = ' + r + ' Вт'; },
+                        desc: function (r) { return 'Мощность нагрузки составляет ' + r + ' Вт'; },
+                        unit: 'Вт'
+                    },
+                    findU: {
+                        fields: [
+                            { id: 'inp1', label: 'Мощность (P)', unit: 'Вт', placeholder: 'введите числовое значение', validate: 'any' },
+                            { id: 'inp2', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение', validate: 'nonzero' },
+                            COS_FIELD
+                        ],
+                        calc: function (v) { return v[0] / (v[1] * SQRT3 * v[2]); },
+                        fmt: function (v, r) { return 'U = ' + v[0] + ' Вт / (' + v[1] + ' А \u00d7 1.732 \u00d7 ' + v[2] + ') = ' + r + ' В'; },
+                        desc: function (r) { return 'Напряжение в цепи составляет ' + r + ' В'; },
+                        unit: 'В'
+                    }
+                }
+            };
+
+            var currentNet = 'single';
+            var currentMode = 'findI';
+
+            function getCfg() {
+                return configs[currentNet][currentMode];
+            }
+
+            function renderFields() {
+                var cfg = getCfg();
+                var html = cfg.fields.map(function (f) {
+                    var labelText = f.unit ? f.label + ', ' + f.unit : f.label;
+                    return '<div class="field-group">'
+                        + '<label class="field-label" for="' + f.id + '">' + labelText + '</label>'
+                        + '<input class="field-input" type="number" id="' + f.id + '" placeholder="' + f.placeholder + '" step="any">'
+                        + (f.hint ? '<div class="field-hint">' + f.hint + '</div>' : '')
+                        + '<div class="field-error" id="' + f.id + '-err"></div>'
+                        + '</div>';
+                }).join('');
+                document.getElementById('calcFields').innerHTML = html;
+
+                // Pre-fill voltage field if present
+                var fields = cfg.fields;
+                for (var i = 0; i < fields.length; i++) {
+                    if (fields[i].label.indexOf('Напряжение') !== -1) {
+                        document.getElementById(fields[i].id).value = currentNet === 'three' ? '400' : '230';
+                        break;
+                    }
+                }
+            }
+
+            function validateField(f) {
+                var inputEl = document.getElementById(f.id);
+                var errorEl = document.getElementById(f.id + '-err');
+                var raw = inputEl.value.trim();
+
+                if (raw === '' || isNaN(Number(raw))) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Введите числовое значение';
+                    return null;
+                }
+
+                var val = Number(raw);
+
+                if (f.validate === 'nonzero' && val === 0) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Делить на ноль нельзя.';
+                    return null;
+                }
+
+                if (f.validate === 'cosf' && (val < 0.1 || val > 1.0)) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Коэффициент мощности должен быть от 0.1 до 1.0';
+                    return null;
+                }
+
+                inputEl.style.borderColor = '#333';
+                errorEl.textContent = '';
+                return val;
+            }
+
+            function calculate() {
+                var cfg = getCfg();
+                var values = [];
+                var valid = true;
+
+                for (var i = 0; i < cfg.fields.length; i++) {
+                    var val = validateField(cfg.fields[i]);
+                    if (val === null) valid = false;
+                    values.push(val);
+                }
+
+                if (!valid) return;
+
+                var result = cfg.calc(values);
+                var resultStr = parseFloat(result.toPrecision(4)).toString();
+
+                document.getElementById('resultValue').textContent = resultStr + ' ' + cfg.unit;
+                document.getElementById('resultFormula').textContent = cfg.fmt(values, resultStr);
+                document.getElementById('resultDesc').textContent = cfg.desc(resultStr);
+                document.getElementById('calcResult').style.display = 'block';
+            }
+
+            function reset() {
+                renderFields();
+                document.getElementById('calcResult').style.display = 'none';
+            }
+
+            function setNet(net) {
+                currentNet = net;
+                document.querySelectorAll('.net-tab').forEach(function (tab) {
+                    tab.classList.toggle('net-tab--active', tab.dataset.net === net);
+                });
+                document.getElementById('netFormula').textContent = net === 'single'
+                    ? 'I = P / U'
+                    : 'I = P / (U \u00d7 \u221a3 \u00d7 cos\u03C6)';
+                reset();
+            }
+
+            function setMode(mode) {
+                currentMode = mode;
+                document.querySelectorAll('.mode-btn').forEach(function (btn) {
+                    btn.classList.toggle('mode-btn--active', btn.dataset.mode === mode);
+                });
+                reset();
+            }
+
+            // Init
+            reset();
+
+            document.querySelectorAll('.net-tab').forEach(function (tab) {
+                tab.addEventListener('click', function () { setNet(tab.dataset.net); });
+            });
+
+            document.querySelectorAll('.mode-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () { setMode(btn.dataset.mode); });
+            });
+
+            document.getElementById('calcSubmit').addEventListener('click', calculate);
+
+            document.getElementById('calcFields').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') calculate();
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор по Ому - emostrEngineering</title>
+    <meta name="description" content="Калькулятор по Закону Ома: найти напряжение, ток, сопротивление">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                <img src="../../assets/pics/logo.png" height="60" alt="emostrEngineering">
+            </a>
+            <nav>
+                <a href="/calc/" class="nav-link">Калькуляторы</a>
+                <a href="/articles/" class="nav-link">Статьи</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="hero hero--inner">
+            <div class="container">
+                <a href="/calc/" class="breadcrumb">&larr; Калькуляторы</a>
+                <h1>Калькулятор по Закону Ома</h1>
+                <p>U = I &times; R - найти любую величину по двум известным</p>
+            </div>
+        </section>
+
+        <!-- Calculator -->
+        <section class="section section-divider">
+            <div class="container">
+                <div class="calc-wrap">
+
+                    <!-- Triangle -->
+                    <div class="ohm-triangle-outer">
+                        <div class="ohm-triangle">
+                            <button class="tri-zone tri-u" data-mode="findU">U</button>
+                            <div class="tri-row">
+                                <button class="tri-zone tri-i" data-mode="findI">I</button>
+                                <button class="tri-zone tri-r" data-mode="findR">R</button>
+                            </div>
+                        </div>
+                        <p class="tri-hint">Нажмите на величину которую хотите найти</p>
+                    </div>
+
+                    <!-- Mode buttons -->
+                    <div class="calc-modes">
+                        <button class="mode-btn mode-btn--active" data-mode="findU">Напряжение</button>
+                        <button class="mode-btn" data-mode="findI">Ток</button>
+                        <button class="mode-btn" data-mode="findR">Сопротивление</button>
+                    </div>
+
+                    <!-- Fields (rendered by JS) -->
+                    <div class="calc-fields" id="calcFields"></div>
+
+                    <!-- Calculate -->
+                    <button class="calc-submit" id="calcSubmit">Рассчитать</button>
+
+                    <!-- Result -->
+                    <div class="calc-result" id="calcResult" style="display:none">
+                        <div class="result-value" id="resultValue"></div>
+                        <div class="result-formula" id="resultFormula"></div>
+                        <div class="result-desc" id="resultDesc"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <span class="footer-copy">&copy; 2025&ndash;2026 emostrEngineering</span>
+            <a href="mailto:contact@emostr.com" class="footer-link">contact@emostr.com</a>
+            <a href="https://emostr.com" class="footer-link" target="_blank" rel="noopener">emostr.com</a>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var modes = {
+                findU: {
+                    fields: [
+                        { id: 'inp1', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение' },
+                        { id: 'inp2', label: 'Сопротивление (R)', unit: 'Ом', placeholder: 'введите числовое значение' }
+                    ],
+                    calc: function (a, b) { return a * b; },
+                    zeroDivisor: false,
+                    fmt: function (a, b, r) { return 'U = ' + a + ' А \u00d7 ' + b + ' Ом = ' + r + ' В'; },
+                    desc: function (r) { return 'Напряжение в цепи составляет ' + r + ' В'; },
+                    unit: 'В'
+                },
+                findI: {
+                    fields: [
+                        { id: 'inp1', label: 'Напряжение (U)', unit: 'В', placeholder: 'введите числовое значение' },
+                        { id: 'inp2', label: 'Сопротивление (R)', unit: 'Ом', placeholder: 'введите числовое значение' }
+                    ],
+                    calc: function (a, b) { return a / b; },
+                    zeroDivisor: true,
+                    fmt: function (a, b, r) { return 'I = ' + a + ' В / ' + b + ' Ом = ' + r + ' А'; },
+                    desc: function (r) { return 'Ток в цепи составляет ' + r + ' А'; },
+                    unit: 'А'
+                },
+                findR: {
+                    fields: [
+                        { id: 'inp1', label: 'Напряжение (U)', unit: 'В', placeholder: 'введите числовое значение' },
+                        { id: 'inp2', label: 'Ток (I)', unit: 'А', placeholder: 'введите числовое значение' }
+                    ],
+                    calc: function (a, b) { return a / b; },
+                    zeroDivisor: true,
+                    fmt: function (a, b, r) { return 'R = ' + a + ' В / ' + b + ' А = ' + r + ' Ом'; },
+                    desc: function (r) { return 'Сопротивление в цепи составляет ' + r + ' Ом'; },
+                    unit: 'Ом'
+                }
+            };
+
+            var currentMode = 'findU';
+
+            function renderFields(mode) {
+                var fields = modes[mode].fields;
+                var html = fields.map(function (f) {
+                    return '<div class="field-group">'
+                        + '<label class="field-label" for="' + f.id + '">' + f.label + ', ' + f.unit + '</label>'
+                        + '<input class="field-input" type="number" id="' + f.id + '" placeholder="' + f.placeholder + '" step="any">'
+                        + '<div class="field-error" id="' + f.id + '-err"></div>'
+                        + '</div>';
+                }).join('');
+                document.getElementById('calcFields').innerHTML = html;
+            }
+
+            function setMode(mode) {
+                currentMode = mode;
+                document.querySelectorAll('.mode-btn').forEach(function (btn) {
+                    btn.classList.toggle('mode-btn--active', btn.dataset.mode === mode);
+                });
+                document.querySelectorAll('.tri-zone').forEach(function (zone) {
+                    zone.classList.toggle('tri-zone--active', zone.dataset.mode === mode);
+                });
+                renderFields(mode);
+                document.getElementById('calcResult').style.display = 'none';
+            }
+
+            function validate(inputEl, errorEl, allowZero) {
+                var raw = inputEl.value.trim();
+                if (raw === '' || isNaN(Number(raw))) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Введите числовое значение';
+                    return null;
+                }
+                if (!allowZero && Number(raw) === 0) {
+                    inputEl.style.borderColor = '#cc3333';
+                    errorEl.textContent = 'Делить на ноль нельзя.';
+                    return null;
+                }
+                inputEl.style.borderColor = '#333';
+                errorEl.textContent = '';
+                return Number(raw);
+            }
+
+            function calculate() {
+                var mode = modes[currentMode];
+                var inp1 = document.getElementById('inp1');
+                var inp2 = document.getElementById('inp2');
+                var err1 = document.getElementById('inp1-err');
+                var err2 = document.getElementById('inp2-err');
+
+                var a = validate(inp1, err1, true);
+                var b = validate(inp2, err2, !mode.zeroDivisor);
+
+                if (a === null || b === null) return;
+
+                var result = mode.calc(a, b);
+                var resultStr = parseFloat(result.toPrecision(4)).toString();
+
+                document.getElementById('resultValue').textContent = resultStr + ' ' + mode.unit;
+                document.getElementById('resultFormula').textContent = mode.fmt(a, b, resultStr);
+                document.getElementById('resultDesc').textContent = mode.desc(resultStr);
+                document.getElementById('calcResult').style.display = 'block';
+            }
+
+            // Init
+            renderFields(currentMode);
+            document.querySelector('[data-mode="' + currentMode + '"].tri-zone').classList.add('tri-zone--active');
+
+            document.querySelectorAll('.mode-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () { setMode(btn.dataset.mode); });
+            });
+
+            document.querySelectorAll('.tri-zone').forEach(function (zone) {
+                zone.addEventListener('click', function () { setMode(zone.dataset.mode); });
+            });
+
+            document.getElementById('calcSubmit').addEventListener('click', calculate);
+
+            document.getElementById('calcFields').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') calculate();
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
