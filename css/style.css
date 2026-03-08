@@ -1,11 +1,9 @@
-/* ===== Reset ===== */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* ===== Font ===== */
 @font-face {
   font-family: 'Racama';
   src: url('../assets/fonts/Racama-Regular.woff2') format('woff2');
@@ -14,7 +12,6 @@
   font-display: swap;
 }
 
-/* ===== Base ===== */
 body {
   background-color: #0a0a0a;
   color: #d0d0d0;
@@ -27,14 +24,12 @@ a {
   color: inherit;
 }
 
-/* ===== Container ===== */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ===== Header ===== */
 header {
   background-color: #000000;
   border-bottom: 2px solid #1a1a1a;
@@ -66,7 +61,6 @@ nav {
   color: #ffffff;
 }
 
-/* ===== Hero ===== */
 .hero {
   padding: 80px 0;
 }
@@ -100,7 +94,6 @@ nav {
   background-color: #f0b030;
 }
 
-/* ===== Sections ===== */
 .section {
   padding: 60px 0;
 }
@@ -115,7 +108,6 @@ nav {
   margin-bottom: 32px;
 }
 
-/* ===== Cards grid ===== */
 .cards-grid {
   display: grid;
   gap: 20px;
@@ -129,7 +121,6 @@ nav {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* ===== Card ===== */
 .card {
   display: block;
   background-color: #111111;
@@ -171,7 +162,6 @@ nav {
   margin-bottom: 12px;
 }
 
-/* ===== Footer ===== */
 footer {
   background-color: #000000;
   border-top: 2px solid #1a1a1a;
@@ -199,7 +189,6 @@ footer {
   color: #ffffff;
 }
 
-/* ===== Hero inner (catalog pages) ===== */
 .hero--inner {
   padding: 60px 0 40px 0;
 }
@@ -228,7 +217,6 @@ footer {
   color: #ffffff;
 }
 
-/* ===== Section title accent ===== */
 .section-title--accent {
   font-size: 1.3rem;
   border-left: 3px solid #e8a020;
@@ -236,13 +224,11 @@ footer {
   margin-bottom: 24px;
 }
 
-/* ===== Cards grid calc (3 cols) ===== */
 .cards-grid--calc {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
-/* ===== Card calc ===== */
 .card--calc {
   padding: 24px 20px;
   transition: border-color 0.3s ease, transform 0.3s ease;
@@ -270,7 +256,6 @@ footer {
   line-height: 1.5;
 }
 
-/* ===== Card stub (soon) ===== */
 .card--stub {
   background-color: #0d0d0d;
   border-color: #1a1a1a;
@@ -286,17 +271,14 @@ footer {
   color: #555555;
 }
 
-/* ===== Nav active ===== */
 .nav-link--active {
   color: #ffffff;
 }
 
-/* ===== Filter radios (hidden) ===== */
 #f-all, #f-elec, #f-plumb {
   display: none;
 }
 
-/* ===== Tags filter ===== */
 .tags-filter {
   display: flex;
   gap: 8px;
@@ -314,7 +296,6 @@ footer {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Active label — which radio is checked */
 #f-all:checked ~ main label[for="f-all"],
 #f-elec:checked ~ main label[for="f-elec"],
 #f-plumb:checked ~ main label[for="f-plumb"] {
@@ -323,17 +304,14 @@ footer {
   font-weight: bold;
 }
 
-/* Filter: electricity only */
 #f-elec:checked ~ main .cat-plumb {
   display: none;
 }
 
-/* Filter: plumbing only */
 #f-plumb:checked ~ main .cat-elec {
   display: none;
 }
 
-/* ===== Articles grid ===== */
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -345,7 +323,6 @@ footer {
   display: contents;
 }
 
-/* ===== Card article ===== */
 .card--article {
   padding: 24px 20px;
   transition: border-color 0.3s ease, transform 0.3s ease;
@@ -370,7 +347,6 @@ footer {
   line-height: 1.5;
 }
 
-/* ===== 404 page ===== */
 .body--full {
   display: flex;
   flex-direction: column;
@@ -433,13 +409,11 @@ footer {
   color: #ffffff;
 }
 
-/* ===== Calculator (Ohm) ===== */
 .calc-wrap {
   max-width: 520px;
   margin: 0 auto;
 }
 
-/* Triangle */
 .ohm-triangle-outer {
   text-align: center;
   margin: 40px auto;
@@ -503,7 +477,6 @@ footer {
   margin-top: 12px;
 }
 
-/* Network tabs */
 .net-tabs {
   display: flex;
   gap: 10px;
@@ -536,14 +509,12 @@ footer {
   margin-bottom: 24px;
 }
 
-/* Field hint */
 .field-hint {
   font-size: 0.75rem;
   color: #555555;
   margin-top: 4px;
 }
 
-/* Mode buttons */
 .calc-modes {
   display: flex;
   gap: 10px;
@@ -570,7 +541,6 @@ footer {
   font-weight: bold;
 }
 
-/* Input fields */
 .calc-fields {
   display: flex;
   flex-direction: column;
@@ -605,7 +575,6 @@ footer {
   border-color: #e8a020;
 }
 
-/* Remove number input arrows */
 .field-input::-webkit-inner-spin-button,
 .field-input::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -622,7 +591,6 @@ footer {
   min-height: 1.1em;
 }
 
-/* Submit button */
 .calc-submit {
   margin-top: 24px;
   width: 100%;
@@ -642,7 +610,6 @@ footer {
   background: #f0b030;
 }
 
-/* Result block */
 .calc-result {
   background: #111111;
   border: 1px solid #222222;
@@ -670,7 +637,6 @@ footer {
   margin-top: 6px;
 }
 
-/* ===== Cable calculator ===== */
 .block-title {
   font-size: 0.85rem;
   color: #666666;
@@ -765,7 +731,7 @@ footer {
   color: #ffffff;
 }
 
-/* Results */
+
 .results-grid {
   display: flex;
   gap: 12px;
@@ -800,7 +766,6 @@ footer {
   color: #666666;
 }
 
-/* Formulas block */
 .formulas-block {
   background: #0d0d0d;
   border: 1px solid #1a1a1a;
@@ -823,7 +788,6 @@ footer {
   line-height: 1.8;
 }
 
-/* Warning */
 .calc-warning {
   background: #1a0000;
   border: 1px solid #cc3333;
@@ -833,27 +797,22 @@ footer {
   margin-top: 24px;
 }
 
-/* ===== Section HR divider ===== */
 .section-hr {
   border: none;
   border-top: 1px solid #1a1a1a;
   margin: 40px 0;
 }
 
-/* ===== Mobile ===== */
 @media (max-width: 768px) {
-  /* Header */
   .header-inner {
     flex-direction: column;
     gap: 16px;
   }
 
-  /* Hero */
   .hero h1 {
     font-size: 1.9rem;
   }
 
-  /* Grids */
   .cards-grid--3,
   .cards-grid--2,
   .cards-grid--calc {
@@ -889,14 +848,12 @@ footer {
     flex-direction: column;
   }
 
-  /* Footer */
   .footer-inner {
     flex-direction: column;
     gap: 12px;
     text-align: center;
   }
 
-  /* 404 */
   .error-code {
     font-size: 5rem;
   }
