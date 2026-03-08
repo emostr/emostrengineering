@@ -1,7 +1,7 @@
 ---
 title: Как выбрать автоматические выключатели
 category: Электрика
-date: 9 марта 2026 г.
+date: 9 марта 2026
 readtime: 4 минуты
 calc_url: /calc/cable/
 calc_title: Сечение кабеля
